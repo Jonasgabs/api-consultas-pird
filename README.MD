@@ -58,4 +58,6 @@ pip install -r requirements.txt
 #### 📄 `README.md`
 Documentação do projeto com instruções de instalação e uso.
 
+Comando para rodar o servidor na raiz do projeto: python -m app.servidor.servidor
+
 ---
