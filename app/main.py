@@ -1,15 +1,18 @@
-from cliente import Cliente
+from cliente.cliente import Cliente
+import sys
+
+
+host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
+porta = int(sys.argv[2]) if len(sys.argv) > 2 else 8080
+
+cliente = Cliente(host, porta) 
 
 while True:
-    print("Digite o nome ou o preço do produto.")
-    consulta = input("Pesquisar: ").upper()
+    consulta = input("Pesquisar (nome ou preço do produto, ou 'SAIR' para sair): ")
 
-    if consulta == "SAIR":
-        ''' Fazer lógica para desconectar o cliente'''
+    if consulta.upper() == "SAIR":
+        cliente.desconectar()
         break
 
-    # resposta = cliente.enviar_requisicao(consulta)
-    # print("Resposta do servidor:", resposta)
-
-    # host = sys.argv[1] if len(sys.argv) > 1 else "127.0.0.1"
-    # porta = int(sys.argv[2]) if len(sys.argv) > 2 else 8080 (Pegar IP pelo terminal, implementar)
+    resposta = cliente.enviar_requisicao(consulta)
+    print("Resposta do servidor:", resposta)
