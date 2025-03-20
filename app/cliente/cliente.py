@@ -1,4 +1,5 @@
 import socket
+from time import sleep
 
 class Cliente:
     def __init__(self, host="127.0.0.1", porta=8080):
@@ -16,11 +17,16 @@ class Cliente:
                 else:
                     requisicao = f"SEARCH /{consulta.lower()}\n"
 
+                sleep(0.5)
                 print(f"[DEBUG] Enviando: {requisicao.strip()}")
                 cliente.sendall(requisicao.encode())
 
                 resposta = cliente.recv(1024).decode()
-                print(f"[DEBUG] Resposta recebida: {resposta}")
+                sleep(0.5)
+                print(f"[DEBUG] Resposta recebida: \n{resposta}")
+                sleep(0.5)
+                print("-=" * 50)
+                sleep(0.5)
                 return resposta
         except ConnectionError:
             return "Erro: Não foi possível conectar ao servidor."
