@@ -61,3 +61,5 @@ Documentação do projeto com instruções de instalação e uso.
 Comando para rodar o servidor na raiz do projeto: python -m app.servidor.servidor
 
 ---
+
+comando para rodar o cliente na raiz do projeto: python app/main.py
