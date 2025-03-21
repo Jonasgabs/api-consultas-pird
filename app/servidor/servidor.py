@@ -24,54 +24,48 @@ class Servidor:
     def consultar_produtos(self, query):
         query = query.lstrip("/")
 
-        if query.isdigit():
+        if query.replace('.', '', 1).isdigit():
             query = float(query)
             resultado = [produto.dicionario() for produto in self.produtos.values() if produto.preco == query]
-
             if resultado:
-                return f"200 OK\nContent-Type: application/json\n\n{json.dumps(resultado)}"
+                return f"200\n{json.dumps(resultado)}"
             else:
-                return "404 Not Found\n\nNenhum produto encontrado com esse preço."
-
+                return "404\nNot Found"
         else:
             produto = self.produtos.get(query.lower())
             if produto:
-                return f"200 OK\nContent-Type: application/json\n\n{json.dumps(produto.dicionario())}"
+                return f"200\n{json.dumps(produto.dicionario())}"
             else:
-                return "404 Not Found\n\nProduto não encontrado."
-
-        return "400 Bad Request\n\nConsulta inválida."
+                return "404\nNot Found"
 
     def criar_produto(self, nome, preco):
         nome_formatado = nome.lower()
         if nome_formatado in self.produtos:
-            return "409 Conflict\n\nProduto já existe."
-
+            return "409\nConflict"
         try:
             preco = float(preco)
             novo_produto = Produto(nome, preco)
             self.produtos[nome_formatado] = novo_produto
-            return f"201 Created\n\nProduto '{nome}' criado com sucesso."
+            return f"201\nOK"
         except ValueError:
-            return "400 Bad Request\n\nPreço inválido."
+            return "400\nBad Request"
 
     def deletar_produto(self, nome):
         nome_formatado = nome.lower()
         if nome_formatado in self.produtos:
             del self.produtos[nome_formatado]
-            return f"200 OK\n\nProduto '{nome}' removido com sucesso."
+            return f"200\nOK"
         else:
-            return "404 Not Found\n\nProduto não encontrado."
+            return "404\nNot Found"
 
     def processar_requisicao(self, requisicao):
         linhas = requisicao.strip().split("\n")
 
         if len(linhas) > 0:
             linha_req = linhas[0].split()
-            print(linha_req)
 
             if len(linha_req) >= 2:
-                comando = linha_req[0]
+                comando = linha_req[0].upper()
                 recurso = linha_req[1].strip("/")
 
                 if comando == "SEARCH":
@@ -81,28 +75,24 @@ class Servidor:
                 elif comando == "DELETE":
                     return self.deletar_produto(recurso)
                 elif comando == "QUIT":
-                    return "200 OK\n\nConexão encerrada."
+                    return "200\nOK"
 
-        return "400 Bad Request\n\nRequisição inválida"
+        return "400\nBad Request"
 
     def handle_client(self, conn, addr):
-        print(f"Cliente conectado: {addr}")
         try:
             while True:
                 data = conn.recv(1024).decode()
                 if not data:
                     break
-
                 resposta = self.processar_requisicao(data)
                 conn.sendall(resposta.encode())
-
                 if data.startswith("QUIT"):
                     break
         except ConnectionError:
-            print(f"Erro de conexão com {addr}")
+            pass
         finally:
             conn.close()
-            print(f"Conexão encerrada: {addr}")
 
 
 if __name__ == "__main__":
